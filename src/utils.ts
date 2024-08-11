@@ -2,14 +2,14 @@
  * Copyright (c) 2024 by frostime. All Rights Reserved.
  * @Author       : frostime
  * @Date         : 2024-04-18 21:05:32
- * @FilePath     : /src/utils/index.ts
- * @LastEditTime : 2024-07-13 21:46:42
+ * @FilePath     : /src/utils.ts
+ * @LastEditTime : 2024-08-11 21:10:02
  * @Description  : 
  */
 import { type Plugin } from 'siyuan';
 
 export const getPlugin = (): Plugin => {
-    let plugin = window.siyuan.ws.app.plugins.find(p => p.name === 'sy-f-misc');
+    let plugin = window.siyuan.ws.app.plugins.find(p => p.name === 'sy-bind-mdfile');
     return plugin;
 }
 
