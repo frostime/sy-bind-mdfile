@@ -159,13 +159,13 @@ const SyncMdConfig: Component<{
             return {
                 path,
                 exist: false,
-                text: '<span style="font-weight: bold;">文件尚不存在</span>'
+                text: `<span style="font-weight: bold;">${i18n.filestatus.not}</span>`
             };
         } else {
             return {
                 path,
                 exist: true,
-                text: `<span style="font-weight: bold; color: var(--b3-theme-primary)">文件已存在，上次更改时间: ${status.updatedTime}</span>`
+                text: `<span style="font-weight: bold; color: var(--b3-theme-primary)">${i18n.filestatus.exist}: ${status.updatedTime}</span>`
             };
         }
     });
@@ -208,11 +208,11 @@ const SyncMdConfig: Component<{
                 <div class="fn__flex fn__flex-column" style="gap: 5px;">
                     <Show when={exportMdFileStatus().exist}>
                         <button class="b3-button fn__block" onClick={props.import}>
-                            导入内容
+                            {i18n.import}
                         </button>
                     </Show>
                     <button class="b3-button fn__block" onClick={props.export}>
-                        导出内容
+                        {i18n.export}
                     </button>
                 </div>
             </div>
@@ -321,7 +321,7 @@ const SyncMdConfig: Component<{
                         </button>
                         <button
                             class="b3-button"
-                            style="max-width: 100px"
+                            style="max-width: 125px"
                             onClick={() => {
                                 let path = nodePath.relative(mdDir(), assetDir());
                                 updateAssetPrefix(path);

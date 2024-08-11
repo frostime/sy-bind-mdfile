@@ -2,8 +2,8 @@
  * Copyright (c) 2024 by frostime. All Rights Reserved.
  * @Author       : frostime
  * @Date         : 2024-08-11 14:55:52
- * @FilePath     : /src/func/sync-markdown/do-port.ts
- * @LastEditTime : 2024-08-11 19:58:53
+ * @FilePath     : /src/sync-markdown/do-port.ts
+ * @LastEditTime : 2024-08-11 20:58:45
  * @Description  : 
  */
 import { openTab, showMessage } from "siyuan";
@@ -32,14 +32,14 @@ export const doImport = async (
     const confirm = `
 <div class="fn__flex fn__flex-column">
   <div class="fn__flex" style="margin-bottom: 16px;">
-    <label class="fn__flex-1">是否导入资源文件?</label>
+    <label class="fn__flex-1">${i18n.doimport.loadasset}</label>
     <input type="checkbox" class="b3-switch fn__flex-center">
   </div>
   <div class="fn__flex" style="margin-bottom: 16px;">
-    <label class="fn__flex-1" for="importMethod" style="margin-bottom: 8px;">导入方案</label>
+    <label class="fn__flex-1" for="importMethod" style="margin-bottom: 8px;">${i18n.doimport.method.title}</label>
     <select id="importMethod" name="importMethod" class="b3-select">
-      <option value="new" selected>创建导入子文档</option>
-      <option value="overwrite">直接覆盖当前文档</option>
+      <option value="new" selected>${i18n.doimport.method.new}</option>
+      <option value="overwrite">${i18n.doimport.method.overwrite}</option>
     </select>
   </div>
   <div class="fn__flex fn__flex-1">

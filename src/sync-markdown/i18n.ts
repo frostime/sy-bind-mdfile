@@ -17,7 +17,21 @@ const I18N = {
         relativePath: '相对路径',
         succssConfirm: '已经导出到: {0}；是否需要跳转到文件夹？',
         mdfilepath: 'Markdown 文件路径',
-        assetpattern: 'MD 文件中资源链接的样式'
+        assetpattern: 'MD 文件中资源链接的样式',
+        import: '导入文档',
+        export: '导出文档',
+        filestatus: {
+            not: '文件尚不存在',
+            exist: '文件已存在, 上次更改时间'
+        },
+        doimport: {
+            loadasset: '是否导入资源文件?',
+            method: {
+                title: '导入方案',
+                new: '导入到新建子文裆',
+                overwrite: '直接覆盖当前文件'
+            }
+        }
     },
     en_US: {
         warn: '⚠️ Warning: Asset directory has changed!',
@@ -37,7 +51,21 @@ const I18N = {
         relativePath: 'Relative Path',
         succssConfirm: 'Exported to: {0}; Do you want to jump to the folder?',
         mdfilepath: 'MD File Path',
-        assetpattern: 'Pattern of asset link in Markdown file'
+        assetpattern: 'Pattern of asset link in Markdown file',
+        import: 'Import',
+        export: 'Export',
+        filestatus: {
+            not: 'File does not exist yet',
+            exist: 'File already exists, last modified time'
+        },
+        doimport: {
+            loadasset: 'Do you want to import the asset files?',
+            method: {
+                title: 'Import Method',
+                new: 'Import to a new sub-document',
+                overwrite: 'Overwrite the current document'
+            }
+        }
     }
 };
 
