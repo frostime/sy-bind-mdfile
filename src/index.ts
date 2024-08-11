@@ -3,49 +3,24 @@
  * @Author       : frostime
  * @Date         : 2024-06-12 19:48:53
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-07-12 18:25:44
+ * @LastEditTime : 2024-08-11 20:36:36
  * @Description  : 
  */
 import {
     Plugin,
-    Constants
 } from "siyuan";
 import "@/index.scss";
 
-import Hello from './hello';
-import SettingExample from "@/setting-example";
+import { load, unload } from "./sync-markdown";
 
-import type {} from "solid-styled-jsx";
-import { solidDialog } from "./libs/dialog";
-
-
-export default class PluginSample extends Plugin {
+export default class BindMdfilePlugin extends Plugin {
 
 
     async onload() {
-        this.addTopBar({
-            icon: 'iconEmoji',
-            title: 'Test Solidjs',
-            callback: () => {
-                this.showHelloDialog();
-            }
-        })
+        load(this);
     }
 
-    showHelloDialog() {
-        solidDialog({
-            title: `SiYuan ${Constants.SIYUAN_VERSION}`,
-            width: "720px",
-            loader: () => Hello({app: this.app}),
-        });
-    }
-
-    openSetting(): void {
-        solidDialog({
-            title: "SettingPannel",
-            loader: () => SettingExample({}),
-            width: "800px",
-            height: "600px"
-        });
+    onunload(): void {
+        unload(this);
     }
 }

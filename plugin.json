@@ -1,22 +1,26 @@
 {
-  "name": "plugin-sample-vite-solidjs",
+  "name": "sy-bind-mdfile",
   "author": "frostime",
-  "url": "https://github.com/frostime/plugin-sample-vite-solidjs",
-  "version": "0.3.5",
+  "url": "https://github.com/frostime/sy-bind-mdfile",
+  "version": "0.1.0",
   "minAppVersion": "3.0.12",
   "backends": [
-    "all"
+    "windows",
+    "linux",
+    "darwin",
+    "ios"
   ],
   "frontends": [
-    "all"
+    "desktop",
+    "desktop-window"
   ],
   "displayName": {
-    "en_US": "Plugin sample with vite and solidjs",
-    "zh_CN": "插件样例 vite + solidjs 版"
+    "en_US": "Bind Local MD File",
+    "zh_CN": "绑定本地 MD 文件"
   },
   "description": {
-    "en_US": "SiYuan plugin sample with vite and solidjs",
-    "zh_CN": "使用 vite 和 solidjs 开发的思源插件样例"
+    "en_US": "Bind the document and the local Markdown file to facilitate the import and export of documents",
+    "zh_CN": "将文档和本地的 Markdown 文件双向绑定，便于方便地导入和导出"
   },
   "readme": {
     "en_US": "README.md",
@@ -28,6 +32,6 @@
     ]
   },
   "keywords": [
-    "plugin", "sample", "插件样例", "solidjs"
+    "plugin", "md", "markdown", "local"
   ]
 }

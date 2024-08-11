@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-03-23 21:37:33
  * @FilePath     : /src/libs/dialog.ts
- * @LastEditTime : 2024-07-12 19:21:27
+ * @LastEditTime : 2024-07-12 18:01:35
  * @Description  : 对话框相关工具
  */
 import { Dialog } from "siyuan";
@@ -42,7 +42,7 @@ export const solidDialog = (args: {
 
 interface IConfirmDialogArgs {
     title: string;
-    content: string | HTMLElement;
+    content: string | HTMLElement | DocumentFragment;
     confirm?: (ele?: HTMLElement) => void;
     cancel?: (ele?: HTMLElement) => void;
     width?: string;
@@ -55,7 +55,7 @@ export const confirmDialog = (args: IConfirmDialogArgs) => {
     const dialog = new Dialog({
         title,
         content: `<div class="b3-dialog__content">
-    <div class="ft__breakword">
+    <div class="ft__breakword" style="height: 100%;">
     </div>
 </div>
 <div class="b3-dialog__action">

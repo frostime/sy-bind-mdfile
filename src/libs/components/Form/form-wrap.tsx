@@ -9,7 +9,7 @@ import { children, Component, createMemo, JSX } from "solid-js";
 
 import css from './form-wrap.module.css';
 
-interface FormWrap {
+interface IFormWrap {
     title: string;
     description: string;
     direction?: 'row' | 'column';
@@ -18,7 +18,7 @@ interface FormWrap {
     action?: JSX.Element;
 }
 
-const FormWrap: Component<FormWrap> = (props) => {
+const FormWrap: Component<IFormWrap> = (props) => {
 
     const C = children(() => props.children);
 
