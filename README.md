@@ -41,6 +41,8 @@ And the links within markdown file will be like this:
 
 ## Import File
 
+> ⚠️ Note: The import function completely overwrites the original document, which will cause block IDs to change, resulting in the invalidation of external references to blocks within the document!
+
 If the specified markdown file already exists, you can also choose to import the file.
 
 ​![image](asset/image-20240811205601-nqrdca7.png)​
