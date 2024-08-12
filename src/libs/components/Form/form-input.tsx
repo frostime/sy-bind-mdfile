@@ -64,6 +64,7 @@ export default function FormInput(props: IProps) {
                     // style="resize: vertical; height: 10em; white-space: nowrap;"
                     {...attrStyle()}
                     value={props.value}
+                    spellcheck={false}
                     onInput={(e) => {
                         changed(e.currentTarget.value);
                     }}

@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-08-11 14:55:52
  * @FilePath     : /src/sync-markdown/do-port.ts
- * @LastEditTime : 2024-08-11 20:58:45
+ * @LastEditTime : 2024-08-12 17:28:05
  * @Description  : 
  */
 import { openTab, showMessage } from "siyuan";
@@ -15,6 +15,8 @@ import { createDocWithMd, exportMdContent, putFile, request, updateBlock } from 
 import i18n from './i18n';
 import { getPlugin, html2ele } from "@/utils";
 
+import { addFMToMd, parseFMFromMd, type FrontMatter } from './front-matter';
+
 const nodeFs = window.require('fs') as typeof import('fs');
 const nodePath = window.require('path') as typeof import('path');
 const electron = window.require('electron');
@@ -24,10 +26,15 @@ export const doImport = async (
     doc: Block,
     mdPath: string,
     assetDir: string,
-    assetPrefix: string
+    assetPrefix: string,
+    confirmCb?: (frontMatter: FrontMatter, content) => void
 ) => {
     //读取 mdpath 文件的文本内容
     let content = nodeFs.readFileSync(mdPath, 'utf8');
+
+    let data = parseFMFromMd(content);
+    const frontmatter = data.frontmatter;
+    content = data.markdown;
 
     const confirm = `
 <div class="fn__flex fn__flex-column">
@@ -136,11 +143,18 @@ export const doImport = async (
             });
 
             showMessage(`Import from: ${mdPath}`, 6000);
+            if (confirmCb) {
+                confirmCb(frontmatter, content);
+            }
         }
     });
 }
 
-export const doExport = async (document: Block, mdPath: string, assetDir: string, assetPrefix: string) => {
+export const doExport = async (
+    document: Block, mdPath: string,
+    assetDir: string, assetPrefix: string,
+    frontmatter: FrontMatter
+) => {
 
     let { content } = await exportMdContent(document.id);
     const lines = content.split('\n');
@@ -200,6 +214,8 @@ export const doExport = async (document: Block, mdPath: string, assetDir: string
             console.log(`Copying ${sourcePath} ---> ${destPath}`);
         }
     }
+
+    content = addFMToMd(content, frontmatter);
 
     // Save the modified Markdown content
     nodeFs.writeFileSync(mdPath, content, 'utf8');

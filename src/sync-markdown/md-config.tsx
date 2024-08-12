@@ -123,10 +123,12 @@ const SyncMdConfig: Component<{
     mdDir: string,
     assetDir: string,
     assetPrefix: string,
+    yaml: string,
     updateFname: (v: string) => void,
     updateMdDir: (v: string) => void,
     updateAsset: (v: string) => void,
     updateAssetPrefix: (v: string) => void,
+    updateYaml: (v: string) => void,
     import: () => void,
     export: () => void,
     cancel: () => void
@@ -333,6 +335,24 @@ const SyncMdConfig: Component<{
                     <div>{assetPattern()}</div>
                 </ItemWrap>
             </WarningArea>
+
+            <ItemWrap
+                title="YAML Front Matter "
+                description={i18n.yaml}
+                direction="row"
+                // action={}
+            >
+                <InputItem
+                    type="textarea"
+                    key="yaml"
+                    value={props.yaml}
+                    placeholder=""
+                    changed={(v) => {
+                        props.updateYaml(v);
+                    }}
+                    style={{ height: '7rem', 'font-size': '17px', 'line-height': '22px' }}
+                />
+            </ItemWrap>
         </div>
     );
 

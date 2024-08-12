@@ -31,7 +31,8 @@ const I18N = {
                 new: '导入到新建子文裆',
                 overwrite: '直接覆盖当前文件'
             }
-        }
+        },
+        yaml: '导出时将 YAML Front Matter 添加在 markdown 的开头；<b>可选项目</b>; 有无 <span>---</span> 皆可'
     },
     en_US: {
         warn: '⚠️ Warning: Asset directory has changed!',
@@ -65,7 +66,8 @@ const I18N = {
                 new: 'Import to a new sub-document',
                 overwrite: 'Overwrite the current document'
             }
-        }
+        },
+        yaml: 'When exporting, YAML Front Matter will be added at the beginning of the markdown; <b>optional</b>; either <span>---</span> written or not is ok'
     }
 };
 
