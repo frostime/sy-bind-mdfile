@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-08-07 15:34:04
  * @FilePath     : /src/sync-markdown/index.tsx
- * @LastEditTime : 2024-08-12 17:24:06
+ * @LastEditTime : 2024-08-25 14:14:08
  * @Description  : 
  */
 import { IEventBusMap, showMessage } from "siyuan";
@@ -21,6 +21,14 @@ import { frontmatter2yaml, yaml2frontmatter } from "./front-matter";
 const nodeFs = window.require('fs');
 const nodePath = window.require('path');
 
+/**
+ * 保存的 custom attr 名称；不同设备保存在不同的属性下
+ */
+const blockAttrName = (device: boolean = true) => {
+    if (!device) return 'custom-export-md';
+    return `custom-export-md-${window.siyuan.config.system.id}`
+}
+
 const updateCustomAttr = async (
     document: Block, fname: string, mdDir: string,
     assetDir: string, assetPrefix: string, frontmatter?: Record<string, string>
@@ -34,18 +42,21 @@ const updateCustomAttr = async (
     if (frontmatter) {
         attrs['frontmatter'] = frontmatter;
     }
-    setBlockAttrs(document.id, {
-        'custom-export-md': JSON.stringify(attrs)
-    });
+    const store = {};
+    store[blockAttrName(true)] = JSON.stringify(attrs);
+    setBlockAttrs(document.id, store);
 }
 
 const getCustomAttr = async (document: Block) => {
     let attr = await getBlockAttrs(document.id);
     let data = { fname: '', mdDir: '', assetDir: '', assetPrefix: '', frontmatter: {} };
-    if (attr['custom-export-md']) {
-        let cache = JSON.parse(attr['custom-export-md']);
-        data = { ...data, ...cache };
+    let cache = {}
+    if (attr[blockAttrName(true)]) {
+        cache = JSON.parse(attr[blockAttrName(true)]);
+    } else if (attr[blockAttrName(false)]) {
+        cache = JSON.parse(attr[blockAttrName(false)]);
     }
+    data = { ...data, ...cache };
     return data;
 }
 
