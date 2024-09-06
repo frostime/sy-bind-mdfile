@@ -8,7 +8,11 @@ This plugin establishes a bidirectional binding relationship between a SiYuan do
 
 ## Configure Binding Relationship
 
-Click on the block menu of a document and configure the local MD file bound to the document in the dialog box.
+Click on the document icon button, open the block menu of a document and configure the local MD file bound to the document in the dialog box.
+
+​![image](asset/image-20240906171714-eg90efa.png)​
+
+‍
 
 ​![image](asset/image-20240811205635-bhj7a2l.png)​
 
