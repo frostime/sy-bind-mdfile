@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-08-07 15:34:04
  * @FilePath     : /src/sync-markdown/index.tsx
- * @LastEditTime : 2024-10-02 17:35:40
+ * @LastEditTime : 2024-10-02 18:08:26
  * @Description  : 
  */
 import { IEventBusMap, showMessage } from "siyuan";
@@ -32,6 +32,7 @@ const blockAttrName = (device: boolean = true) => {
     return `custom-export-md-${window.siyuan.config.system.id}`
 }
 
+
 const updateCustomAttr = async (
     document: Block, fname: string, mdDir: string,
     assetDir: string, assetPrefix: string, frontmatter?: Record<string, string>, exportBasicYaml?: boolean
@@ -50,6 +51,7 @@ const updateCustomAttr = async (
     store[blockAttrName(true)] = JSON.stringify(attrs);
     setBlockAttrs(document.id, store);
 }
+
 
 const getCustomAttr = async (document: Block) => {
     let attr = await getBlockAttrs(document.id);
@@ -75,60 +77,42 @@ const eventHandler = async (e: CustomEvent<IEventBusMap['click-editortitleicon']
             let doc = await getBlockByID(docId);
 
             let bindMdConfig = await getCustomAttr(doc);
-            let { fname, mdDir, assetDir, assetPrefix, frontmatter, exportBasicYaml } = bindMdConfig;
-            fname = fname || doc.content;
+            bindMdConfig.fname = bindMdConfig.fname || doc.content;
 
-            // const [configStore, setConfigStore] = createStore(bindMdConfig);
+            bindMdConfig['yaml'] = frontmatter2yaml(bindMdConfig.frontmatter) ?? '';
 
-            let yaml = frontmatter2yaml(frontmatter);
+            const [conf, setConf] = createStore<IBindMdConfig>(bindMdConfig);
 
             const dialog = solidDialog({
                 'title': i18n.menuLabel,
                 loader: () => SyncMdConfig({
-                    fname: fname,
-                    mdDir, assetDir, assetPrefix, yaml, exportBasicYaml,
-                    updateFname: (v) => {
-                        fname = v;
-                    },
-                    updateMdDir: (v) => {
-                        mdDir = v;
-                    },
-                    updateAsset: (v) => {
-                        assetDir = v;
-                    },
-                    updateAssetPrefix: (v) => {
-                        assetPrefix = v;
-                    },
-                    updateYaml: (v) => {
-                        yaml = v;
-                    },
-                    updateExportBasicYaml: (v) => {
-                        exportBasicYaml = v;
-                    },
+                    configStore: conf,
+                    setConfigStore: setConf,
                     import: () => {
-                        if (fname && mdDir && assetDir) {
-                            let mdPath = nodePath.join(mdDir, `${fname}.md`);
-                            doImport(doc, mdPath, assetDir, assetPrefix, (frontmatter: Record<string, string>) => {
-                                updateCustomAttr(doc, fname, mdDir, assetDir, assetPrefix, frontmatter);
+                        if (conf.fname && conf.mdDir && conf.assetDir) {
+
+                            doImport(doc, conf, (frontmatter: Record<string, any>) => {
+                                updateCustomAttr(doc, conf.fname, conf.mdDir, conf.assetDir, conf.assetPrefix, frontmatter);
                             });
                         } else {
                             showMessage(i18n.notSet, 4000, 'error');
                             console.log(`Import failed: ${i18n.notSet}`);
-                            console.log(fname, mdDir, assetDir);
+                            console.log(conf.fname, conf.mdDir, conf.assetDir);
                         }
                         dialog.destroy();
                     },
                     export: () => {
-                        if (fname && mdDir && assetDir) {
-                            let mdPath = nodePath.join(mdDir, `${fname}.md`);
-                            const frontmatter = yaml2frontmatter(yaml);
+                        if (conf.fname && conf.mdDir && conf.assetDir) {
 
-                            doExport(doc, mdPath, assetDir, assetPrefix, frontmatter, exportBasicYaml);
-                            updateCustomAttr(doc, fname, mdDir, assetDir, assetPrefix, frontmatter, exportBasicYaml);
+                            const frontmatter = yaml2frontmatter(conf.yaml);
+                            conf.frontmatter = frontmatter;
+
+                            doExport(doc, conf);
+                            updateCustomAttr(doc, conf.fname, conf.mdDir, conf.assetDir, conf.assetPrefix, frontmatter, conf.exportBasicYaml);
                         } else {
                             showMessage(i18n.notSet, 4000, 'error');
                             console.log(`Export failed: ${i18n.notSet}`);
-                            console.log(fname, mdDir, assetDir);
+                            console.log(conf.fname, conf.mdDir, conf.assetDir);
                         }
                         dialog.destroy();
                     },
@@ -140,8 +124,6 @@ const eventHandler = async (e: CustomEvent<IEventBusMap['click-editortitleicon']
             })
         }
     })
-
-
 }
 
 

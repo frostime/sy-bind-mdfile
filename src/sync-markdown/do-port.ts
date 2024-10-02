@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-08-11 14:55:52
  * @FilePath     : /src/sync-markdown/do-port.ts
- * @LastEditTime : 2024-10-02 17:28:23
+ * @LastEditTime : 2024-10-02 18:08:10
  * @Description  : 
  */
 import { openTab, showMessage } from "siyuan";
@@ -24,11 +24,11 @@ const electron = window.require('electron');
 
 export const doImport = async (
     doc: Block,
-    mdPath: string,
-    assetDir: string,
-    assetPrefix: string,
+    config: IBindMdConfig,
     confirmCb?: (frontMatter: FrontMatter, content) => void
 ) => {
+    let mdPath = nodePath.join(config.mdDir, `${config.fname}.md`);
+    let { assetDir, assetPrefix } = config;
     //读取 mdpath 文件的文本内容
     let content = nodeFs.readFileSync(mdPath, 'utf8');
 
@@ -151,10 +151,12 @@ export const doImport = async (
 }
 
 export const doExport = async (
-    document: Block, mdPath: string,
-    assetDir: string, assetPrefix: string,
-    frontmatter: FrontMatter, exportBasicYaml: boolean
+    document: Block, config: IBindMdConfig
 ) => {
+
+    let mdPath = nodePath.join(config.mdDir, `${config.fname}.md`);
+
+    let { assetDir, assetPrefix, frontmatter, exportBasicYaml } = config;
 
     let { content } = await exportMdContent(document.id);
     const lines = content.split('\n');

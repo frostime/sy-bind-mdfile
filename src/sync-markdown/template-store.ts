@@ -1,12 +1,8 @@
 import { createStore } from "solid-js/store";
 import { getPlugin } from "@/utils";
 
-export interface ConfigTemplate {
+export interface ConfigTemplate extends Omit<IBindMdConfig, 'fname'> {
     name: string;
-    mdDir: string;
-    assetDir: string;
-    assetPrefix: string;
-    yaml: string;
 }
 
 const STORAGE_KEY = `config-templates@${window.siyuan.config.system.id}.json`;

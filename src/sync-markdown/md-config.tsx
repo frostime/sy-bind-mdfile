@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2024 by frostime. All Rights Reserved.
+ * @Author       : frostime
+ * @Date         : 2024-08-11 20:33:30
+ * @FilePath     : /src/sync-markdown/md-config.tsx
+ * @LastEditTime : 2024-10-02 18:12:46
+ * @Description  : 
+ */
 import { Component, createMemo, createSignal, JSXElement, Show } from "solid-js";
 
 import { FormInput as InputItem, FormWrap as ItemWrap } from '@/libs/components/Form';
@@ -10,6 +18,7 @@ import { solidDialog } from "@/libs/dialog";
 
 import { addTemplate } from "./template-store";
 import { confirm, showMessage } from "siyuan";
+import { type SetStoreFunction, type Store } from "solid-js/store";
 
 const nodeFs = window.require('fs');
 const nodePath = window.require('path');
@@ -59,61 +68,47 @@ const chooseDirectory = async (setter: (value: string) => void) => {
     }
 }
 
+
 function useMDConfig(props: Parameters<typeof SyncMdConfig>[0]) {
-    let [fname, setFname] = createSignal(props.fname);
-    let [mdDir, setMdDir] = createSignal(props.mdDir);
-    let [assetDir, setAssetDir] = createSignal(props.assetDir);
-    let [assetPrefix, setAssetPrefix] = createSignal(props.assetPrefix);
-    let [yaml, setYaml] = createSignal(props.yaml);
+    const { configStore, setConfigStore } = props;
     const [warning, setWarning] = createSignal(false);
 
     const assetPattern = createMemo(() => {
-        let prefix = assetPrefix();
+        let prefix = configStore.assetPrefix;
         if (prefix === '') return `${i18n.assetpattern}: ![xxx](xxx.png)`;
         else return `${i18n.assetpattern}: ![](${prefix}/xxx.png)`;
     });
 
-
     const updateFname = (fname: string) => {
-        setFname(fname);
-        props.updateFname(fname);
+        setConfigStore('fname', fname);
     };
 
+
     const updateMdDir = (dir: string) => {
-        setMdDir(dir);
-        props.updateMdDir(dir);
-        if (assetDir() === '') {
+        setConfigStore('mdDir', dir);
+        if (configStore.assetDir === '') {
             updateAssetDir(`${dir}/assets`);
         }
     }
 
     const updateAssetDir = (dir: string) => {
-        setAssetDir(dir);
-        props.updateAsset(dir);
+        setConfigStore('assetDir', dir);
         setWarning(true);
     }
 
-
     const updateAssetPrefix = (prefix: string) => {
-        setAssetPrefix(prefix)
-        props.updateAssetPrefix(prefix);
+        setConfigStore('assetPrefix', prefix);
         setWarning(false);
         console.debug(`Asset prefix: ${prefix}`);
     }
 
     return {
-        fname,
-        mdDir,
-        assetDir,
-        assetPrefix,
-        warning,
-        yaml,
         updateFname,
         updateMdDir,
         updateAssetDir,
         updateAssetPrefix,
         assetPattern,
-        setYaml
+        warning,
     };
 }
 
@@ -132,15 +127,17 @@ const checkFile = (fpath: string): { exist: boolean, updatedTime?: any } => {
  * @param config 
  * @returns 
  */
-const useConfigTemplate = (config: ReturnType<typeof useMDConfig>) => {
+const useConfigTemplate = (props: Parameters<typeof SyncMdConfig>[0]) => {
+    const { configStore, setConfigStore } = props;
 
     const handleSaveTemplate = async () => {
         const template: ConfigTemplate = {
-            name: `${config.mdDir()}/${config.fname()}`,
-            mdDir: config.mdDir(),
-            assetDir: config.assetDir(),
-            assetPrefix: config.assetPrefix(),
-            yaml: config.yaml()
+            name: `${configStore.mdDir}/${configStore.fname}`,
+            mdDir: configStore.mdDir,
+            assetDir: configStore.assetDir,
+            assetPrefix: configStore.assetPrefix,
+            yaml: configStore.yaml,
+            exportBasicYaml: configStore.exportBasicYaml,
         };
         if (hasTemplate(template.name)) {
             confirm('Warn', 'Template exists, overwrite?', () => {
@@ -155,10 +152,11 @@ const useConfigTemplate = (config: ReturnType<typeof useMDConfig>) => {
     };
 
     const handleApplyTemplate = (template: ConfigTemplate) => {
-        config.updateMdDir(template.mdDir ?? '');
-        config.updateAssetDir(template.assetDir ?? '');
-        config.updateAssetPrefix(template.assetPrefix ?? '');
-        config.setYaml(template.yaml ?? '');
+        setConfigStore('mdDir', template.mdDir ?? '');
+        setConfigStore('assetDir', template.assetDir ?? '');
+        setConfigStore('assetPrefix', template.assetPrefix ?? '');
+        setConfigStore('yaml', template.yaml ?? '');
+        setConfigStore('exportBasicYaml', template.exportBasicYaml ?? false);
     };
 
     const save = () => {
@@ -207,43 +205,28 @@ const useConfigTemplate = (config: ReturnType<typeof useMDConfig>) => {
 }
 
 const SyncMdConfig: Component<{
-    fname: string,
-    mdDir: string,
-    assetDir: string,
-    assetPrefix: string,
-    yaml: string,
-    exportBasicYaml: boolean,
-    updateFname: (v: string) => void,
-    updateMdDir: (v: string) => void,
-    updateAsset: (v: string) => void,
-    updateAssetPrefix: (v: string) => void,
-    updateYaml: (v: string) => void,
-    updateExportBasicYaml: (v: boolean) => void,
+    configStore: Store<IBindMdConfig>,
+    setConfigStore: SetStoreFunction<IBindMdConfig>,
     import: () => void,
     export: () => void,
     cancel: () => void
 }> = (props) => {
-
     const mdConfig = useMDConfig(props);
     const {
-        fname,
-        mdDir,
-        assetDir,
-        assetPrefix,
-        warning,
         updateFname,
         updateMdDir,
         updateAssetDir,
         updateAssetPrefix,
-        assetPattern
+        assetPattern,
+        warning,
     } = mdConfig;
 
-    const { TemplateManagerArea } = useConfigTemplate(mdConfig);
+    const { TemplateManagerArea } = useConfigTemplate(props);
 
 
     const exportMdFileStatus = createMemo(() => {
-        let file = fname();
-        let dir = mdDir();
+        let file = props.configStore.fname;
+        let dir = props.configStore.mdDir;
         if (dir === '' || file === '') return {
             exist: false,
             text: ''
@@ -328,7 +311,7 @@ const SyncMdConfig: Component<{
                 <InputItem
                     type="textinput"
                     key="fname"
-                    value={props.fname}
+                    value={props.configStore.fname}
                     placeholder={i18n.docName}
                     changed={(v) => {
                         updateFname(v);
@@ -345,7 +328,7 @@ const SyncMdConfig: Component<{
                     <InputItem
                         type="textinput"
                         key="md-dir"
-                        value={mdDir()}
+                        value={props.configStore.mdDir}
                         placeholder={i18n.mdExportDirPlaceholder}
                         style={{ flex: '1' }}
                         changed={(v) => {
@@ -372,7 +355,7 @@ const SyncMdConfig: Component<{
                     <InputItem
                         type="textinput"
                         key="asset-dir"
-                        value={assetDir()}
+                        value={props.configStore.assetDir}
                         placeholder={i18n.assetDir}
                         style={{ flex: '1' }}
                         changed={(v) => {
@@ -400,7 +383,7 @@ const SyncMdConfig: Component<{
                         <InputItem
                             type="textinput"
                             key="asset-prefix"
-                            value={assetPrefix()}
+                            value={props.configStore.assetPrefix}
                             placeholder={i18n.assetPrefix}
                             style={{ flex: '1' }}
                             changed={(v) => {
@@ -411,7 +394,7 @@ const SyncMdConfig: Component<{
                             class="b3-button"
                             style="max-width: 100px"
                             onClick={() => {
-                                updateAssetPrefix(assetDir());
+                                updateAssetPrefix(props.configStore.assetDir);
                             }}
                         >
                             {i18n.absolutePath}
@@ -420,7 +403,7 @@ const SyncMdConfig: Component<{
                             class="b3-button"
                             style="max-width: 125px"
                             onClick={() => {
-                                let path = nodePath.relative(mdDir(), assetDir());
+                                let path = nodePath.relative(props.configStore.mdDir, props.configStore.assetDir);
                                 updateAssetPrefix(path);
                             }}
                         >
@@ -441,9 +424,9 @@ const SyncMdConfig: Component<{
                         <input
                             type="checkbox"
                             class="b3-switch fn__flex-center"
-                            checked={props.exportBasicYaml}
+                            checked={props.configStore.exportBasicYaml}
                             onChange={(e) => {
-                                props.updateExportBasicYaml(e.target.checked);
+                                props.setConfigStore('exportBasicYaml', e.target.checked);
                             }}
                         />
                     </div>
@@ -452,11 +435,10 @@ const SyncMdConfig: Component<{
                 <InputItem
                     type="textarea"
                     key="yaml"
-                    value={mdConfig.yaml()}
+                    value={props.configStore.yaml}
                     placeholder=""
                     changed={(v) => {
-                        mdConfig.setYaml(v);
-                        props.updateYaml(v);
+                        props.setConfigStore('yaml', v);
                     }}
                     style={{ height: '7rem', 'font-size': '17px', 'line-height': '22px' }}
                 />
@@ -464,9 +446,11 @@ const SyncMdConfig: Component<{
         </div>
     );
 
+
     return (
         <Body />
     );
 };
+
 
 export default SyncMdConfig;
