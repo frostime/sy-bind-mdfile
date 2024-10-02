@@ -212,11 +212,13 @@ const SyncMdConfig: Component<{
     assetDir: string,
     assetPrefix: string,
     yaml: string,
+    exportBasicYaml: boolean,
     updateFname: (v: string) => void,
     updateMdDir: (v: string) => void,
     updateAsset: (v: string) => void,
     updateAssetPrefix: (v: string) => void,
     updateYaml: (v: string) => void,
+    updateExportBasicYaml: (v: boolean) => void,
     import: () => void,
     export: () => void,
     cancel: () => void
@@ -433,7 +435,19 @@ const SyncMdConfig: Component<{
                 title="YAML Front Matter "
                 description={i18n.yaml}
                 direction="row"
-            // action={}
+                action={(
+                    <div style={{ display: "flex", gap: '5px' }}>
+                        <span>{i18n.exportBasicInfo}</span>
+                        <input
+                            type="checkbox"
+                            class="b3-switch fn__flex-center"
+                            checked={props.exportBasicYaml}
+                            onChange={(e) => {
+                                props.updateExportBasicYaml(e.target.checked);
+                            }}
+                        />
+                    </div>
+                )}
             >
                 <InputItem
                     type="textarea"

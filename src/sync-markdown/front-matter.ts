@@ -2,7 +2,7 @@ import matter from "gray-matter";
 import { stringify } from "gray-matter";
 
 export type YAML = string;
-export type FrontMatter = Record<string, string>;
+export type FrontMatter = Record<string, any>;
 export const yaml2frontmatter = (yaml: YAML): FrontMatter => {
     let frontMatter = '';
     yaml = yaml.trim();

@@ -42,7 +42,8 @@ const I18N = {
         edit: '编辑',
         delete: '删除',
         save: '保存',
-        close: '关闭'
+        close: '关闭',
+        exportBasicInfo: '导出基本信息'
     },
     en_US: {
         warn: '⚠️ Warning: Asset directory has changed!',
@@ -87,7 +88,8 @@ const I18N = {
         edit: 'Edit',
         delete: 'Delete',
         save: 'Save',
-        close: 'Close'
+        close: 'Close',
+        exportBasicInfo: 'Export Basic'
     }
 };
 

@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-08-11 14:55:52
  * @FilePath     : /src/sync-markdown/do-port.ts
- * @LastEditTime : 2024-08-12 17:28:05
+ * @LastEditTime : 2024-10-02 17:28:23
  * @Description  : 
  */
 import { openTab, showMessage } from "siyuan";
@@ -13,7 +13,7 @@ import { createDocWithMd, exportMdContent, putFile, request, updateBlock } from 
 
 
 import i18n from './i18n';
-import { getPlugin, html2ele } from "@/utils";
+import { formatDateTime, getPlugin, html2ele } from "@/utils";
 
 import { addFMToMd, parseFMFromMd, type FrontMatter } from './front-matter';
 
@@ -153,7 +153,7 @@ export const doImport = async (
 export const doExport = async (
     document: Block, mdPath: string,
     assetDir: string, assetPrefix: string,
-    frontmatter: FrontMatter
+    frontmatter: FrontMatter, exportBasicYaml: boolean
 ) => {
 
     let { content } = await exportMdContent(document.id);
@@ -213,6 +213,17 @@ export const doExport = async (
             nodeFs.copyFileSync(sourcePath, destPath);
             console.log(`Copying ${sourcePath} ---> ${destPath}`);
         }
+    }
+
+    // ADD Default FrontMatter
+    if (exportBasicYaml) {
+        frontmatter = {
+            ...frontmatter,
+            'document': document.id,
+            'notebook': window.siyuan.notebooks.find(n => n.id = document.box)?.name ?? '',
+            'hpath': document.hpath,
+            'export': formatDateTime('yyyy-MM-dd HH:mm:ss'),
+        };
     }
 
     content = addFMToMd(content, frontmatter);

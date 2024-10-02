@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-08-07 15:34:04
  * @FilePath     : /src/sync-markdown/index.tsx
- * @LastEditTime : 2024-10-02 16:24:55
+ * @LastEditTime : 2024-10-02 17:35:40
  * @Description  : 
  */
 import { IEventBusMap, showMessage } from "siyuan";
@@ -19,6 +19,7 @@ import i18n from './i18n';
 import { frontmatter2yaml, yaml2frontmatter } from "./front-matter";
 
 import { initTemplates } from "./template-store";
+import { createStore } from "solid-js/store";
 
 const nodeFs = window.require('fs');
 const nodePath = window.require('path');
@@ -33,13 +34,14 @@ const blockAttrName = (device: boolean = true) => {
 
 const updateCustomAttr = async (
     document: Block, fname: string, mdDir: string,
-    assetDir: string, assetPrefix: string, frontmatter?: Record<string, string>
+    assetDir: string, assetPrefix: string, frontmatter?: Record<string, string>, exportBasicYaml?: boolean
 ) => {
     let attrs = {
         fname: fname,
         mdDir: mdDir,
         assetDir: assetDir,
         assetPrefix: assetPrefix,
+        exportBasicYaml: exportBasicYaml
     };
     if (frontmatter) {
         attrs['frontmatter'] = frontmatter;
@@ -51,8 +53,9 @@ const updateCustomAttr = async (
 
 const getCustomAttr = async (document: Block) => {
     let attr = await getBlockAttrs(document.id);
-    let data = { fname: '', mdDir: '', assetDir: '', assetPrefix: '', frontmatter: {} };
+    let data = { fname: '', mdDir: '', assetDir: '', assetPrefix: '', frontmatter: {}, exportBasicYaml: false };
     let cache = {}
+    //兼容此前的版本
     if (attr[blockAttrName(true)]) {
         cache = JSON.parse(attr[blockAttrName(true)]);
     } else if (attr[blockAttrName(false)]) {
@@ -71,8 +74,11 @@ const eventHandler = async (e: CustomEvent<IEventBusMap['click-editortitleicon']
         'click': async () => {
             let doc = await getBlockByID(docId);
 
-            let { fname, mdDir, assetDir, assetPrefix, frontmatter } = await getCustomAttr(doc);
+            let bindMdConfig = await getCustomAttr(doc);
+            let { fname, mdDir, assetDir, assetPrefix, frontmatter, exportBasicYaml } = bindMdConfig;
             fname = fname || doc.content;
+
+            // const [configStore, setConfigStore] = createStore(bindMdConfig);
 
             let yaml = frontmatter2yaml(frontmatter);
 
@@ -80,7 +86,7 @@ const eventHandler = async (e: CustomEvent<IEventBusMap['click-editortitleicon']
                 'title': i18n.menuLabel,
                 loader: () => SyncMdConfig({
                     fname: fname,
-                    mdDir, assetDir, assetPrefix, yaml,
+                    mdDir, assetDir, assetPrefix, yaml, exportBasicYaml,
                     updateFname: (v) => {
                         fname = v;
                     },
@@ -95,6 +101,9 @@ const eventHandler = async (e: CustomEvent<IEventBusMap['click-editortitleicon']
                     },
                     updateYaml: (v) => {
                         yaml = v;
+                    },
+                    updateExportBasicYaml: (v) => {
+                        exportBasicYaml = v;
                     },
                     import: () => {
                         if (fname && mdDir && assetDir) {
@@ -114,8 +123,8 @@ const eventHandler = async (e: CustomEvent<IEventBusMap['click-editortitleicon']
                             let mdPath = nodePath.join(mdDir, `${fname}.md`);
                             const frontmatter = yaml2frontmatter(yaml);
 
-                            doExport(doc, mdPath, assetDir, assetPrefix, frontmatter);
-                            updateCustomAttr(doc, fname, mdDir, assetDir, assetPrefix, frontmatter);
+                            doExport(doc, mdPath, assetDir, assetPrefix, frontmatter, exportBasicYaml);
+                            updateCustomAttr(doc, fname, mdDir, assetDir, assetPrefix, frontmatter, exportBasicYaml);
                         } else {
                             showMessage(i18n.notSet, 4000, 'error');
                             console.log(`Export failed: ${i18n.notSet}`);
