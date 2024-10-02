@@ -32,7 +32,17 @@ const I18N = {
                 overwrite: '直接覆盖当前文件'
             }
         },
-        yaml: '导出时将 YAML Front Matter 添加在 markdown 的开头；<b>可选项目</b>; 有无 <span>---</span> 皆可'
+        yaml: '导出时将 YAML Front Matter 添加在 markdown 的开头；<b>可选项目</b>; 有无 <span>---</span> 皆可',
+        templateManager: '模板管理',
+        saveAsTemplate: '保存为模板',
+        manageTemplates: '管理模板',
+        templateName: '模板名称',
+        // exportDir: '导出目录',
+        apply: '应用',
+        edit: '编辑',
+        delete: '删除',
+        save: '保存',
+        close: '关闭'
     },
     en_US: {
         warn: '⚠️ Warning: Asset directory has changed!',
@@ -67,7 +77,17 @@ const I18N = {
                 overwrite: 'Overwrite the current document'
             }
         },
-        yaml: 'When exporting, YAML Front Matter will be added at the beginning of the markdown; <b>optional</b>; either <span>---</span> written or not is ok'
+        yaml: 'When exporting, YAML Front Matter will be added at the beginning of the markdown; <b>optional</b>; either <span>---</span> written or not is ok',
+        templateManager: 'Template Manager',
+        saveAsTemplate: 'Save as Template',
+        manageTemplates: 'Manage Templates',
+        templateName: 'Template Name',
+        // exportDir: 'Export Directory',
+        apply: 'Apply',
+        edit: 'Edit',
+        delete: 'Delete',
+        save: 'Save',
+        close: 'Close'
     }
 };
 

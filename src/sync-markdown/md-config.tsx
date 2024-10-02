@@ -4,6 +4,12 @@ import { FormInput as InputItem, FormWrap as ItemWrap } from '@/libs/components/
 import { formatDateTime } from "@/utils";
 
 import i18n from "./i18n";
+import { TemplateManagerUI } from "./template-manager";
+import { ConfigTemplate, deleteTemplate, getTemplates, hasTemplate } from "./template-store";
+import { solidDialog } from "@/libs/dialog";
+
+import { addTemplate } from "./template-store";
+import { confirm, showMessage } from "siyuan";
 
 const nodeFs = window.require('fs');
 const nodePath = window.require('path');
@@ -58,6 +64,7 @@ function useMDConfig(props: Parameters<typeof SyncMdConfig>[0]) {
     let [mdDir, setMdDir] = createSignal(props.mdDir);
     let [assetDir, setAssetDir] = createSignal(props.assetDir);
     let [assetPrefix, setAssetPrefix] = createSignal(props.assetPrefix);
+    let [yaml, setYaml] = createSignal(props.yaml);
     const [warning, setWarning] = createSignal(false);
 
     const assetPattern = createMemo(() => {
@@ -100,11 +107,13 @@ function useMDConfig(props: Parameters<typeof SyncMdConfig>[0]) {
         assetDir,
         assetPrefix,
         warning,
+        yaml,
         updateFname,
         updateMdDir,
         updateAssetDir,
         updateAssetPrefix,
-        assetPattern
+        assetPattern,
+        setYaml
     };
 }
 
@@ -115,6 +124,85 @@ const checkFile = (fpath: string): { exist: boolean, updatedTime?: any } => {
         return { exist: true, updatedTime: formatDateTime('yyyy-MM-dd HH:mm:ss', stat.mtime) };
     } else {
         return { exist: false };
+    }
+}
+
+/**
+ * 将配置保存为模板，方便复用
+ * @param config 
+ * @returns 
+ */
+const useConfigTemplate = (config: ReturnType<typeof useMDConfig>) => {
+
+    const handleSaveTemplate = async () => {
+        const template: ConfigTemplate = {
+            name: `${config.mdDir()}/${config.fname()}`,
+            mdDir: config.mdDir(),
+            assetDir: config.assetDir(),
+            assetPrefix: config.assetPrefix(),
+            yaml: config.yaml()
+        };
+        if (hasTemplate(template.name)) {
+            confirm('Warn', 'Template exists, overwrite?', () => {
+                deleteTemplate(template.name);
+                addTemplate(template);
+                showMessage('Template overwritten');
+            });
+        } else {
+            addTemplate(template);
+            showMessage('Template saved');
+        }
+    };
+
+    const handleApplyTemplate = (template: ConfigTemplate) => {
+        config.updateMdDir(template.mdDir ?? '');
+        config.updateAssetDir(template.assetDir ?? '');
+        config.updateAssetPrefix(template.assetPrefix ?? '');
+        config.setYaml(template.yaml ?? '');
+    };
+
+    const save = () => {
+        handleSaveTemplate();
+    }
+
+    const show = () => {
+        const dialog = solidDialog({
+            title: i18n.templateManager,
+            loader: () => TemplateManagerUI({
+                onApply: (template) => {
+                    handleApplyTemplate(template);
+                    dialog.destroy();
+                },
+                onClose: () => {
+                    dialog.destroy();
+                }
+            }),
+            width: '750px',
+        });
+    }
+
+    const TemplateManagerArea = () => {
+        return (
+            <div style={{
+                display: "flex", gap: '5px', padding: '8px 24px',
+                'border-bottom': '2px solid var(--b3-theme-primary)'
+            }}>
+                <div style={{ flex: 1, "font-weight": "bold" }}>
+                    {i18n.templateManager}
+                    <span class="counter">{getTemplates().length}</span>
+                </div>
+                <button class="b3-button" onClick={save}>
+                    {i18n.saveAsTemplate}
+                </button>
+                <button class="b3-button" onClick={show}>
+                    {i18n.manageTemplates}
+                </button>
+            </div>
+        );
+    };
+
+    return {
+        TemplateManagerArea
     }
 }
 
@@ -134,6 +222,7 @@ const SyncMdConfig: Component<{
     cancel: () => void
 }> = (props) => {
 
+    const mdConfig = useMDConfig(props);
     const {
         fname,
         mdDir,
@@ -145,7 +234,9 @@ const SyncMdConfig: Component<{
         updateAssetDir,
         updateAssetPrefix,
         assetPattern
-    } = useMDConfig(props);
+    } = mdConfig;
+
+    const { TemplateManagerArea } = useConfigTemplate(mdConfig);
 
 
     const exportMdFileStatus = createMemo(() => {
@@ -224,6 +315,8 @@ const SyncMdConfig: Component<{
     const Body = () => (
         <div style={{ flex: 1, display: "flex", "flex-direction": "column", padding: '16px 4px;' }}>
             <LocalMDFileStatus />
+
+            <TemplateManagerArea />
 
             <ItemWrap
                 title={i18n.docName}
@@ -340,14 +433,15 @@ const SyncMdConfig: Component<{
                 title="YAML Front Matter "
                 description={i18n.yaml}
                 direction="row"
-                // action={}
+            // action={}
             >
                 <InputItem
                     type="textarea"
                     key="yaml"
-                    value={props.yaml}
+                    value={mdConfig.yaml()}
                     placeholder=""
                     changed={(v) => {
+                        mdConfig.setYaml(v);
                         props.updateYaml(v);
                     }}
                     style={{ height: '7rem', 'font-size': '17px', 'line-height': '22px' }}

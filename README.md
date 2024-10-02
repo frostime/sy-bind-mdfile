@@ -23,6 +23,18 @@ Click on the document icon button, open the block menu of a document and configu
   * The default is the `assets`​ folder under the document directory
 * **Asset Path Prefix**: The prefix for the resource files referenced in the exported Markdown file; you can specify whether to use an absolute or relative path by clicking the two buttons on the right; in special cases, you can also fill it in manually (do not add `/`​ or `\`​ symbols at the end of the prefix)
 
+### Template Management
+
+​![image](asset/image-20241002170819-vfrys1q.png)​
+
+* Save as Template: Save the current configuration as a template for future use.
+* Manage Templates: View all template information and perform the following actions on each template:
+
+  * Apply: Apply the corresponding template configuration to the current configuration.
+  * Delete: Remove the saved template.
+
+⚠️ Note: The templates saved on different devices are independent of each other.
+
 ## Export File
 
 Click the export button to automatically write the content of the SiYuan document into the md file and write all asset files into the resource file directory.

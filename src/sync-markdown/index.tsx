@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-08-07 15:34:04
  * @FilePath     : /src/sync-markdown/index.tsx
- * @LastEditTime : 2024-08-25 14:14:08
+ * @LastEditTime : 2024-10-02 16:24:55
  * @Description  : 
  */
 import { IEventBusMap, showMessage } from "siyuan";
@@ -17,6 +17,8 @@ import { doExport, doImport } from "./do-port";
 
 import i18n from './i18n';
 import { frontmatter2yaml, yaml2frontmatter } from "./front-matter";
+
+import { initTemplates } from "./template-store";
 
 const nodeFs = window.require('fs');
 const nodePath = window.require('path');
@@ -141,7 +143,7 @@ export const load = (plugin: BindMdfilePlugin) => {
 
     if (enabled) return;
     enabled = true;
-
+    initTemplates();
     plugin.eventBus.on('click-editortitleicon', eventHandler);
 }
 
