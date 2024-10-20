@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-08-11 14:55:52
  * @FilePath     : /src/sync-markdown/do-port.ts
- * @LastEditTime : 2024-10-02 18:08:10
+ * @LastEditTime : 2024-10-20 21:01:19
  * @Description  : 
  */
 import { openTab, showMessage } from "siyuan";
@@ -21,6 +21,19 @@ const nodeFs = window.require('fs') as typeof import('fs');
 const nodePath = window.require('path') as typeof import('path');
 const electron = window.require('electron');
 
+function convertHtmlImagesToMarkdown(content: string): string {
+    const imgRegex = /<img\s+(?:[^>]*?\s+)?src=(["'])(.*?)\1(?:\s+alt=(["'])(.*?)\3)?[^>]*>(?:<\/img>)?/gi;
+    return content.replace(imgRegex, (match, _quote1, src, _quote2, alt = '') => {
+        // Decode HTML entities in src and alt
+        src = src.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+        alt = alt.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+
+        // Escape special characters in alt text
+        alt = alt.replace(/([[\]])/g, '\\$1');
+
+        return `![${alt}](${src})`;
+    });
+}
 
 export const doImport = async (
     doc: Block,
@@ -31,6 +44,9 @@ export const doImport = async (
     let { assetDir, assetPrefix } = config;
     //读取 mdpath 文件的文本内容
     let content = nodeFs.readFileSync(mdPath, 'utf8');
+
+    // Convert HTML images to Markdown syntax
+    content = convertHtmlImagesToMarkdown(content);
 
     let data = parseFMFromMd(content);
     const frontmatter = data.frontmatter;
@@ -245,4 +261,7 @@ export const doExport = async (
         }
     });
 }
+
+
+
 
