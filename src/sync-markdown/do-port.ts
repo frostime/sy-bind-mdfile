@@ -3,18 +3,15 @@
  * @Author       : frostime
  * @Date         : 2024-08-11 14:55:52
  * @FilePath     : /src/sync-markdown/do-port.ts
- * @LastEditTime : 2024-10-20 21:01:19
+ * @LastEditTime : 2025-01-18 22:32:41
  * @Description  : 
  */
 import { openTab, showMessage } from "siyuan";
 
-import { confirmDialog } from "@/libs/dialog";
-import { createDocWithMd, exportMdContent, putFile, request, updateBlock } from "@/api";
-
+import { createDocWithMd, exportMdContent, putFile, request, updateBlock } from "@frostime/siyuan-plugin-kits/api";
+import { app, formatDateTime, html2ele, confirmDialog } from "@frostime/siyuan-plugin-kits";
 
 import i18n from './i18n';
-import { formatDateTime, getPlugin, html2ele } from "@/utils";
-
 import { addFMToMd, parseFMFromMd, type FrontMatter } from './front-matter';
 
 const nodeFs = window.require('fs') as typeof import('fs');
@@ -98,6 +95,7 @@ export const doImport = async (
             }
 
             //解析所有的 asset 的 link 地址
+            // TODO 兼容 `./` 的前缀
             for (let asset of assets) {
                 let localPath = asset;
                 if (asset.startsWith(assetPrefix)) {
@@ -152,7 +150,7 @@ export const doImport = async (
             }
 
             openTab({
-                app: getPlugin().app,
+                app: app,
                 doc: {
                     id: newDocId
                 }

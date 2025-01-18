@@ -1,5 +1,13 @@
+/*
+ * Copyright (c) 2025 by frostime. All Rights Reserved.
+ * @Author       : frostime
+ * @Date         : 2024-10-02 16:20:15
+ * @FilePath     : /src/sync-markdown/template-store.ts
+ * @LastEditTime : 2025-01-18 22:37:22
+ * @Description  : 
+ */
+import { thisPlugin } from "@frostime/siyuan-plugin-kits";
 import { createStore } from "solid-js/store";
-import { getPlugin } from "@/utils";
 
 export interface ConfigTemplate extends Omit<IBindMdConfig, 'fname'> {
     name: string;
@@ -10,7 +18,7 @@ const STORAGE_KEY = `config-templates@${window.siyuan.config.system.id}.json`;
 const [templates, setTemplates] = createStore<ConfigTemplate[]>([]);
 
 export const initTemplates = async () => {
-    const plugin = getPlugin();
+    const plugin = thisPlugin();
     let data = await plugin.loadData(STORAGE_KEY);
     if (data) {
         setTemplates(data);
@@ -18,7 +26,7 @@ export const initTemplates = async () => {
 };
 
 export const saveTemplates = async () => {
-    const plugin = getPlugin();
+    const plugin = thisPlugin();
     await plugin.saveData(STORAGE_KEY, JSON.stringify(templates));
 };
 

@@ -3,14 +3,14 @@
  * @Author       : frostime
  * @Date         : 2024-08-07 15:34:04
  * @FilePath     : /src/sync-markdown/index.tsx
- * @LastEditTime : 2024-10-02 18:08:26
+ * @LastEditTime : 2025-01-18 22:36:18
  * @Description  : 
  */
 import { IEventBusMap, showMessage } from "siyuan";
 
 import type BindMdfilePlugin from "@/index";
 import { solidDialog } from "@/libs/dialog";
-import { getBlockAttrs, getBlockByID, setBlockAttrs } from "@/api";
+import { getBlockAttrs, getBlockByID, setBlockAttrs } from "@frostime/siyuan-plugin-kits/api";
 
 import SyncMdConfig from './md-config';
 import { doExport, doImport } from "./do-port";
@@ -74,7 +74,7 @@ const eventHandler = async (e: CustomEvent<IEventBusMap['click-editortitleicon']
         icon: 'iconUpload',
         label: i18n.menuLabel,
         'click': async () => {
-            let doc = await getBlockByID(docId);
+            let doc: Block = await getBlockByID(docId) as Block;
 
             let bindMdConfig = await getCustomAttr(doc);
             bindMdConfig.fname = bindMdConfig.fname || doc.content;
@@ -99,7 +99,7 @@ const eventHandler = async (e: CustomEvent<IEventBusMap['click-editortitleicon']
                             console.log(`Import failed: ${i18n.notSet}`);
                             console.log(conf.fname, conf.mdDir, conf.assetDir);
                         }
-                        dialog.destroy();
+                        dialog.close();
                     },
                     export: () => {
                         if (conf.fname && conf.mdDir && conf.assetDir) {
@@ -114,10 +114,10 @@ const eventHandler = async (e: CustomEvent<IEventBusMap['click-editortitleicon']
                             console.log(`Export failed: ${i18n.notSet}`);
                             console.log(conf.fname, conf.mdDir, conf.assetDir);
                         }
-                        dialog.destroy();
+                        dialog.close();
                     },
                     cancel: () => {
-                        dialog.destroy();
+                        dialog.close();
                     }
                 }),
                 width: '700px'
