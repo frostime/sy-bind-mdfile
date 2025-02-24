@@ -4,13 +4,13 @@
         "useDefineForClassFields": true,
         "module": "ESNext",
         "lib": [
-            "ES2021",
+            "ESNext",
             "DOM",
             "DOM.Iterable"
         ],
         "skipLibCheck": true,
         /* Bundler mode */
-        "moduleResolution": "Node",
+        "moduleResolution": "bundler",
         // "allowImportingTsExtensions": true,
         "allowSyntheticDefaultImports": true,
         "resolveJsonModule": true,
@@ -33,7 +33,7 @@
         // "baseUrl": "./src",
         "paths": {
             "@/*": ["./src/*"],
-            "@/libs/*": ["./src/libs/*"],
+            "@/libs/*": ["./src/libs/*"]
         }
     },
     "include": [

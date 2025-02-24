@@ -1,6 +1,6 @@
 {
   "name": "sy-bind-mdfile",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "type": "module",
   "description": "This is a sample plugin based on vite and solidjs for Siyuan (https://b3log.org/siyuan)",
   "repository": "",
@@ -19,7 +19,7 @@
     "minimist": "^1.2.8",
     "rollup-plugin-livereload": "^2.0.5",
     "sass": "^1.72.0",
-    "siyuan": "0.9.9",
+    "siyuan": "1.0.9",
     "solid-js": "^1.8.17",
     "solid-styled-jsx": "^0.27.1",
     "ts-node": "^10.9.2",
@@ -30,6 +30,8 @@
     "vite-plugin-zip-pack": "^1.2.2"
   },
   "dependencies": {
+    "@frostime/siyuan-plugin-kits": "^1.5.7",
+    "@frostime/solid-signal-ref": "^2.1.0",
     "gray-matter": "^4.0.3"
   }
 }

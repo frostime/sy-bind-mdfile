@@ -2,8 +2,8 @@
   "name": "sy-bind-mdfile",
   "author": "frostime",
   "url": "https://github.com/frostime/sy-bind-mdfile",
-  "version": "0.4.1",
-  "minAppVersion": "3.0.12",
+  "version": "0.5.0",
+  "minAppVersion": "3.1.22",
   "backends": [
     "windows",
     "linux",

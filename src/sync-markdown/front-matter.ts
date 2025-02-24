@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2025 by frostime. All Rights Reserved.
+ * @Author       : frostime
+ * @Date         : 2024-08-12 17:14:43
+ * @FilePath     : /src/sync-markdown/front-matter.ts
+ * @LastEditTime : 2025-02-24 22:11:55
+ * @Description  : 
+ */
 import matter from "gray-matter";
 import { stringify } from "gray-matter";
 

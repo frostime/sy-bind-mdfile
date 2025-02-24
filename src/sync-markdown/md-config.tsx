@@ -3,13 +3,12 @@
  * @Author       : frostime
  * @Date         : 2024-08-11 20:33:30
  * @FilePath     : /src/sync-markdown/md-config.tsx
- * @LastEditTime : 2024-10-02 18:12:46
+ * @LastEditTime : 2025-01-18 22:36:52
  * @Description  : 
  */
 import { Component, createMemo, createSignal, JSXElement, Show } from "solid-js";
 
 import { FormInput as InputItem, FormWrap as ItemWrap } from '@/libs/components/Form';
-import { formatDateTime } from "@/utils";
 
 import i18n from "./i18n";
 import { TemplateManagerUI } from "./template-manager";
@@ -19,6 +18,7 @@ import { solidDialog } from "@/libs/dialog";
 import { addTemplate } from "./template-store";
 import { confirm, showMessage } from "siyuan";
 import { type SetStoreFunction, type Store } from "solid-js/store";
+import { formatDateTime } from "@frostime/siyuan-plugin-kits";
 
 const nodeFs = window.require('fs');
 const nodePath = window.require('path');
@@ -169,10 +169,10 @@ const useConfigTemplate = (props: Parameters<typeof SyncMdConfig>[0]) => {
             loader: () => TemplateManagerUI({
                 onApply: (template) => {
                     handleApplyTemplate(template);
-                    dialog.destroy();
+                    dialog.close();
                 },
                 onClose: () => {
-                    dialog.destroy();
+                    dialog.close();
                 }
             }),
             width: '750px',

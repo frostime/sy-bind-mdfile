@@ -3,18 +3,15 @@
  * @Author       : frostime
  * @Date         : 2024-08-11 14:55:52
  * @FilePath     : /src/sync-markdown/do-port.ts
- * @LastEditTime : 2024-10-20 21:01:19
+ * @LastEditTime : 2025-02-24 22:11:25
  * @Description  : 
  */
 import { openTab, showMessage } from "siyuan";
 
-import { confirmDialog } from "@/libs/dialog";
-import { createDocWithMd, exportMdContent, putFile, request, updateBlock } from "@/api";
-
+import { createDocWithMd, exportMdContent, putFile, request, updateBlock } from "@frostime/siyuan-plugin-kits/api";
+import { app, formatDateTime, html2ele, confirmDialog } from "@frostime/siyuan-plugin-kits";
 
 import i18n from './i18n';
-import { formatDateTime, getPlugin, html2ele } from "@/utils";
-
 import { addFMToMd, parseFMFromMd, type FrontMatter } from './front-matter';
 
 const nodeFs = window.require('fs') as typeof import('fs');
@@ -98,6 +95,7 @@ export const doImport = async (
             }
 
             //解析所有的 asset 的 link 地址
+            // TODO 兼容 `./` 的前缀
             for (let asset of assets) {
                 let localPath = asset;
                 if (asset.startsWith(assetPrefix)) {
@@ -152,7 +150,7 @@ export const doImport = async (
             }
 
             openTab({
-                app: getPlugin().app,
+                app: app,
                 doc: {
                     id: newDocId
                 }
@@ -174,7 +172,9 @@ export const doExport = async (
 
     let { assetDir, assetPrefix, frontmatter, exportBasicYaml } = config;
 
-    let { content } = await exportMdContent(document.id);
+    let { content } = await exportMdContent(document.id, {
+        yfm: false
+    });
     const lines = content.split('\n');
     //去掉重复的顶级标题
     if (lines.length > 1 && lines[0].startsWith('# ')) {
@@ -183,7 +183,9 @@ export const doExport = async (
 
     assetDir = assetDir.replace(/\\/g, '/');
 
-    let assets: string[] = await request('/api/asset/getDocImageAssets', { id: document.id });
+    // let assets: string[] = await request('/api/asset/getDocImageAssets', { id: document.id });
+    // https://github.com/siyuan-note/siyuan/issues/13875
+    let assets: string[] = await request('/api/asset/getDocAssets', { id: document.id });
     assets = assets?.filter((asset) => {
         if (asset.startsWith('http://') || asset.startsWith('https://')) {
             return false;
@@ -237,7 +239,8 @@ export const doExport = async (
     if (exportBasicYaml) {
         frontmatter = {
             ...frontmatter,
-            'document': document.id,
+            'id': document.id,
+            'title': document.content,
             'notebook': window.siyuan.notebooks.find(n => n.id = document.box)?.name ?? '',
             'hpath': document.hpath,
             'export': formatDateTime('yyyy-MM-dd HH:mm:ss'),
@@ -245,7 +248,7 @@ export const doExport = async (
     }
 
     content = addFMToMd(content, frontmatter);
-
+    content = content.trimStart();
     // Save the modified Markdown content
     nodeFs.writeFileSync(mdPath, content, 'utf8');
     console.log(`Export success: ${mdPath}`);
